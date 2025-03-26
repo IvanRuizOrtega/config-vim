@@ -43,6 +43,32 @@ call plug#begin()
  Plug 'junegunn/fzf.vim'
 
 call plug#end()
+"" Desactiva swap y backups en archivos grandes ---
+set noswapfile
+set nobackup
+set nowritebackup
+
+" Desactiva el plugin de syntax si el archivo es enorme
+autocmd BufReadPre * if getfsize(expand('%')) > 10000000 | syntax off | endif
+
+" Incrementa el scroll por línea (opcional)
+set lazyredraw
+
+" Habilita el folding por sintaxis
+set foldmethod=syntax
+
+" Abre los folds cerrados por defecto
+set foldlevelstart=0
+
+" Habilita el fold
+set foldenable
+
+" Máximo nivel de nesting de folds
+set foldnestmax=3
+
+" Opcional: usa la tecla espacio para abrir/cerrar folds
+nnoremap <space> za
+
 "" FileManagement ----
 let g:airline#extensions#tabline#enabled = 1
 let NERDTreeQuitOnOpen=1
