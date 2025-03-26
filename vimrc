@@ -43,6 +43,21 @@ call plug#begin()
  Plug 'junegunn/fzf.vim'
 
 call plug#end()
+
+"" Colors ----
+
+" Colores personalizados de la ventana flotante de CoC
+highlight CocErrorFloat guifg=#FF5555 guibg=#282C34
+highlight CocWarningFloat guifg=#FFFF55 guibg=#282C34
+highlight CocInfoFloat guifg=#55FFFF guibg=#282C34
+highlight CocHintFloat guifg=#55FF55 guibg=#282C34
+
+" Color del fondo de las ventanas flotantes
+highlight CocFloating guibg=#282C34
+
+" Color de selección en menú de autocompletado
+highlight CocMenuSel guibg=#3E4452 guifg=#FFFFFF
+
 "" Desactiva swap y backups en archivos grandes ---
 set noswapfile
 set nobackup
