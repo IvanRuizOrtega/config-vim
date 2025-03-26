@@ -44,8 +44,10 @@ call plug#begin()
 
 call plug#end()
 
-"" Colors ----
+"" Delete spaces
+autocmd BufWritePre * :%s/\s\+$//e
 
+"" Colors ----
 " Colores personalizados de la ventana flotante de CoC
 highlight CocErrorFloat guifg=#FF5555 guibg=#282C34
 highlight CocWarningFloat guifg=#FFFF55 guibg=#282C34
