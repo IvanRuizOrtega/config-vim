@@ -25,3 +25,13 @@ alias dedsh="docker run --rm -it --entrypoint sh"
 alias di="docker images"
 alias dp="docker ps"
 alias dcr="docker compose restart"
+
+## ALista to GitHub
+alias gcb="git checkout -b"
+alias gc="git checkout"
+alias gp="git pull"
+alias gpo="git push origin"
+alias gb="git branch"
+alias grb="git branch -D"
+alias glo="git log --oneline"
+alias gcp="git cherry-pick"
