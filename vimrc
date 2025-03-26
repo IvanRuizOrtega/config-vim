@@ -55,7 +55,7 @@ autocmd BufReadPre * if getfsize(expand('%')) > 10000000 | syntax off | endif
 set lazyredraw
 
 " Habilita el folding por sintaxis
-set foldmethod=syntax
+set foldmethod=indent
 
 " Abre los folds cerrados por defecto
 set foldlevelstart=0
