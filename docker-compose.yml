@@ -1,0 +1,9 @@
+services:
+  vim:
+    build: .
+    container_name: vim_arch
+    stdin_open: true
+    tty: true
+    volumes:
+      - /home/ivan/ab-inbev:/projects # Ajusta si tu WSL está en otra ubicación
+    working_dir: /projects
