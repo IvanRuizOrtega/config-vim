@@ -13,6 +13,10 @@ RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 # Descargar y copiar el archivo .vimrc desde GitHub
 RUN curl -sSLo ~/.vimrc https://raw.githubusercontent.com/IvanRuizOrtega/config-vim/refs/heads/main/vimrc
 
+# Ejecutar Vim-Plug y CocInstall en un script
+COPY setup_vim.sh /setup_vim.sh
+RUN chmod +x /setup_vim.sh && /setup_vim.sh
+
 # Definir el directorio de trabajo por defecto
 WORKDIR /projects
 
