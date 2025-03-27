@@ -1,7 +1,10 @@
 FROM archlinux:latest
 
 # Instalar Vim y dependencioas
-RUN pacman -Sy --noconfirm vim git curl nodejs npm python-pip
+RUN pacman -Sy --noconfirm vim git curl nodejs npm python python-pip php && \
+    npm install -g intelephense typescript typescript-language-server vscode-json-languageserver \
+                      vscode-html-languageserver vscode-css-languageserver yaml-language-server \
+                      eslint prettier pyright 
 
 # Instalar autopep8 globalmente con pip (Python)
 RUN pip3 install --no-cache-dir autopep8 --break-system-packages
