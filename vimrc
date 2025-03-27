@@ -110,11 +110,24 @@ vnoremap <space>c :Commentary <CR>
  
 
 "" --- Prettier ---
-"" Command: CocInstall coc-prettier coc-prettiercoc-json coc-pyright coc-tsserver coc-html coc-css coc-phpls coc-eslint
-"" Abrir :CocConfig y pegar {
+"" Command: CocInstall coc-prettier coc-pyright coc-tsserver coc-html coc-css coc-phpls coc-eslint coc-json
+""" Abrir :CocConfig y pegar {
+  ""// Activa el formateo al guardar para TODOS los lenguajes.
+  "coc.preferences.formatOnSave": true,
   "coc.preferences.formatOnSaveFiletypes": ["*"],
-  "coc.preferences.formatOnSave": true
-"}
+
+  ""// Ejemplo de configuración para Prettier (JS, TS, HTML, CSS, JSON, etc.)
+  "prettier.printWidth": 79,
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "es5",
+
+  ""// Configuración para Python con Black
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": ["--line-length", "79"],
+
+  ""// Configuración para PHP (usando php-cs-fixer y la regla PSR12)
+  "php-cs-fixer.rules": "@PSR12"
+""}
 command! -nargs=0 Prettier :CocCommand prettier.formatFile
 nnoremap <C-P> :Prettier <CR> 
 
