@@ -5,5 +5,5 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - /home/ivan/ab-inbev:/projects # Ajusta si tu WSL está en otra ubicación
+      - /home/ivan/ab-inbev:/projects # Ajusta si tu WSL está en otra ubicación /home/ivan/Documents:/projects --> arch
     working_dir: /projects
