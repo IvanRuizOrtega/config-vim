@@ -39,4 +39,4 @@ RUN chmod +x /setup_vim.sh && /setup_vim.sh
 WORKDIR /projects
 
 # Ejecutar bash por defecto
-CMD ["/bin/bash"]
+CMD ["vim"]
