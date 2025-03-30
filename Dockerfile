@@ -23,6 +23,14 @@ RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 # Descargar y copiar el archivo .vimrc desde GitHub
 RUN curl -sSLo ~/.vimrc https://raw.githubusercontent.com/IvanRuizOrtega/config-vim/refs/heads/main/vimrc
 
+# Configurar CoC para que no falle la instalación
+RUN mkdir -p ~/.config/coc/extensions && \
+    cd ~/.config/coc/extensions && \
+    npm install --global-style --ignore-scripts --no-bin-links --no-package-lock coc-prettier coc-pyright coc-tsserver coc-html coc-css coc-phpls coc-eslint coc-json
+
+# Definir la variable de entorno de Node.js para CoC
+ENV NODE_PATH=/root/.config/coc/extensions/node_modules
+
 # Ejecutar Vim-Plug y CocInstall en un script
 COPY setup_vim.sh /setup_vim.sh
 RUN chmod +x /setup_vim.sh && /setup_vim.sh
