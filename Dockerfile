@@ -1,7 +1,7 @@
 FROM archlinux:latest
 
 # Instalar Vim y dependencioas
-RUN pacman -Sy --noconfirm vim git curl nodejs npm python python-pip php 
+RUN pacman -Sy --noconfirm vim git curl nodejs npm python python-pip php ripgrep
 
 # Instala las herramientas de NodeJS globalmente en otro RUN para evitar fallos
 RUN npm install -g \
