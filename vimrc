@@ -16,6 +16,9 @@ call plug#begin()
  " List your plugins here
   Plug 'tpope/vim-sensible'
 
+ " Íconos para NERDTree y archivos
+  Plug 'ryanoasis/vim-devicons'
+
  "LCP
   Plug 'prabirshrestha/vim-lsp'
   Plug 'mattn/vim-lsp-settings'
@@ -62,6 +65,17 @@ highlight CocFloating guibg=#282C34
 
 " Color de selección en menú de autocompletado
 highlight CocMenuSel guibg=#3E4452 guifg=#FFFFFF
+
+" NERDTree y vim-devicons
+let g:webdevicons_enable = 1
+let g:webdevicons_enable_nerdtree = 1
+let g:NERDTreeDirArrowExpandable = '▸'
+let g:NERDTreeDirArrowCollapsible = '▾'
+
+" Colores personalizados para NERDTree
+autocmd FileType nerdtree highlight NERDTreeDir guifg=#fabd2f
+autocmd FileType nerdtree highlight NERDTreeFile guifg=#b8bb26
+autocmd FileType nerdtree highlight NERDTreeExecFile guifg=#83a598
 
 "" Desactiva swap y backups en archivos grandes ---
 set noswapfile
