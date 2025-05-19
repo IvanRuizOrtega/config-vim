@@ -48,6 +48,9 @@ call plug#end()
 autocmd BufWritePre * :%s/\s\+$//e
 
 "" Colors ----
+syntax enable 
+set background=dark
+colorscheme torte
 " Colores personalizados de la ventana flotante de CoC
 highlight CocErrorFloat guifg=#FF5555 guibg=#282C34
 highlight CocWarningFloat guifg=#FFFF55 guibg=#282C34
