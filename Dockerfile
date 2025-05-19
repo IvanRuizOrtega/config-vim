@@ -23,6 +23,10 @@ RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 # Descargar y copiar el archivo .vimrc desde GitHub
 RUN curl -sSLo ~/.vimrc https://raw.githubusercontent.com/IvanRuizOrtega/config-vim/refs/heads/main/vimrc
 
+## Themes use colorscheme clt + d
+RUN  mkdir -p ~/.vim/colors && \ 
+curl -sSLo ~/.vim/colors/gruvbox.vim https://raw.githubusercontent.com/morhetz/gruvbox/refs/heads/master/colors/gruvbox.vim
+
 # Configurar CoC para que no falle la instalación
 RUN mkdir -p ~/.config/coc/extensions && \
     cd ~/.config/coc/extensions && \
