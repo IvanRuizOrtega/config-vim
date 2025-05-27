@@ -39,6 +39,9 @@ ENV NODE_PATH=/root/.config/coc/extensions/node_modules
 COPY setup_vim.sh /setup_vim.sh
 RUN chmod +x /setup_vim.sh && /setup_vim.sh
 
+# Antes de CMD o al final
+RUN git config --global --add safe.directory /projects
+
 # Definir el directorio de trabajo por defecto
 WORKDIR /projects
 
