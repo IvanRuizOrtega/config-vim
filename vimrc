@@ -45,7 +45,12 @@ call plug#begin()
  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
  Plug 'junegunn/fzf.vim'
 
+" Management versions 
+ Plug 'zivyangll/git-blame.vim'
+
 call plug#end()
+"" Management versions 
+nnoremap Gc :<C-u>call gitblame#echo()<CR>
 
 "" Delete spaces
 autocmd BufWritePre * :%s/\s\+$//e
