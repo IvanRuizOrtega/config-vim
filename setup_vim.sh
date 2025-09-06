@@ -1,19 +1,28 @@
 #!/bin/bash
 
-# Instalar plugins de Vim
-vim +'PlugInstall --sync' +qall
+# ============================
+# Instalar plugins de Neovim con vim-plug
+# ============================
+nvim +'PlugInstall --sync' +qall
 
-# Instalar CoC extensions
-vim +'CocInstall coc-prettier coc-pyright coc-tsserver coc-html coc-css coc-phpls coc-eslint coc-json' +qall
+# ============================
+# Instalar extensiones de coc.nvim (solo LSP/format, no debug)
+# ============================
+nvim +'CocInstall -sync coc-prettier coc-pyright coc-tsserver coc-html coc-css coc-phpls coc-eslint coc-json' +qall
 
+# ============================
 # Crear carpeta de configuración de CoC si no existe
+# ============================
 mkdir -p ~/.vim
 
-# Escribir configuración de CoC
+# ============================
+# Configuración de CoC
+# ============================
 cat > ~/.vim/coc-settings.json <<EOF
 {
   "coc.preferences.formatOnSave": true,
   "coc.preferences.formatOnType": true,
+
   "languageserver": {
     "python": {
       "command": "pyright-langserver",
@@ -58,3 +67,117 @@ cat > ~/.vim/coc-settings.json <<EOF
 }
 EOF
 
+# ============================
+# Configuración de nvim-dap
+# ============================
+mkdir -p ~/.config/nvim/lua
+mkdir -p ~/.local/share/nvim/dap_adapters
+
+# Clonar adaptadores si no existen
+if [ ! -d ~/.local/share/nvim/dap_adapters/vscode-php-debug ]; then
+  git clone https://github.com/xdebug/vscode-php-debug ~/.local/share/nvim/dap_adapters/vscode-php-debug
+  (cd ~/.local/share/nvim/dap_adapters/vscode-php-debug && npm install && npm run build)
+fi
+
+if [ ! -d ~/.local/share/nvim/dap_adapters/vscode-node-debug2 ]; then
+  git clone https://github.com/microsoft/vscode-node-debug2 ~/.local/share/nvim/dap_adapters/vscode-node-debug2
+  (cd ~/.local/share/nvim/dap_adapters/vscode-node-debug2 && npm install && npm run build)
+fi
+
+# ============================
+# Configuración de DAP (Python, PHP, Node.js/TS)
+# ============================
+cat > ~/.config/nvim/lua/dap-config.lua <<'EOF'
+local dap = require('dap')
+local dapui = require('dapui')
+
+-- UI + Virtual Text
+dapui.setup()
+require("nvim-dap-virtual-text").setup()
+
+dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
+dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close() end
+dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end
+
+-- ========================
+-- Python (requiere: pip install debugpy)
+-- ========================
+dap.adapters.python = {
+  type = 'executable',
+  command = 'python',
+  args = { '-m', 'debugpy.adapter' },
+}
+dap.configurations.python = {
+  {
+    type = 'python',
+    request = 'launch',
+    name = "Python: archivo actual",
+    program = "${file}",
+    pythonPath = function()
+      return 'python'
+    end,
+  },
+}
+
+-- ========================
+-- PHP (requiere Xdebug)
+-- ========================
+dap.adapters.php = {
+  type = 'executable',
+  command = 'node',
+  args = {os.getenv('HOME') .. '/.local/share/nvim/dap_adapters/vscode-php-debug/out/phpDebug.js'}
+}
+dap.configurations.php = {
+  {
+    type = 'php',
+    request = 'launch',
+    name = "PHP: Xdebug",
+    port = 9003,
+    pathMappings = {
+      ["/var/www/html"] = vim.fn.getcwd()
+    },
+  },
+}
+
+-- ========================
+-- Node.js / TypeScript
+-- ========================
+dap.adapters.node2 = {
+  type = 'executable',
+  command = 'node',
+  args = {os.getenv('HOME') .. '/.local/share/nvim/dap_adapters/vscode-node-debug2/out/src/nodeDebug.js'},
+}
+dap.configurations.javascript = {
+  {
+    name = 'Node: archivo JS',
+    type = 'node2',
+    request = 'launch',
+    program = '${file}',
+    cwd = vim.fn.getcwd(),
+  },
+}
+dap.configurations.typescript = {
+  {
+    name = 'Node: archivo TS',
+    type = 'node2',
+    request = 'launch',
+    program = '${file}',
+    cwd = vim.fn.getcwd(),
+    sourceMaps = true,
+    protocol = 'inspector',
+    runtimeArgs = { "--loader", "ts-node/esm" },
+  },
+}
+EOF
+
+# ============================
+# Mensaje final
+# ============================
+echo "✅ Configuración completada."
+echo "Agrega en tu init.vim o init.lua:"
+echo "  lua require('dap-config')"
+echo ""
+echo "Requisitos adicionales:"
+echo "  - Python: pip install debugpy"
+echo "  - Node:   adaptador en ~/.local/share/nvim/dap_adapters/vscode-node-debug2"
+echo "  - PHP:    habilitar Xdebug (puerto 9003) en tu contenedor"
