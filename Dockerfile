@@ -1,49 +1,50 @@
 FROM archlinux:latest
 
-# Instalar Vim y dependencioas
-RUN pacman -Sy --noconfirm vim git curl nodejs npm python python-pip php ripgrep
+# Evitar prompts interactivos
+ENV TERM xterm-256color
 
-# Instala las herramientas de NodeJS globalmente en otro RUN para evitar fallos
-RUN npm install -g \
-    intelephense \
-    typescript \
-    typescript-language-server \
-    yaml-language-server \
-    eslint \
-    prettier \
-    pyright
+# Instalar dependencias
+RUN pacman -Syu --noconfirm && \
+    pacman -S --noconfirm \
+    neovim git curl wget unzip nodejs npm python python-pip \
+    php composer fzf ripgrep the_silver_searcher \
+    bash-completion && \
+    pacman -Scc --noconfirm
 
-# Instalar autopep8 globalmente con pip (Python)
-RUN pip3 install --no-cache-dir autopep8 --break-system-packages
+# -----------------------------
+# Debuggers externos
+# -----------------------------
+# Python (debugpy para nvim-dap)
+RUN pacman -S --noconfirm python-debugpy
+# Node.js (debug adapter basado en vscode-node-debug2)
+RUN npm install -g node-debug2
+# PHP (Xdebug en Arch)
+RUN pacman -S --noconfirm xdebug && \
+    echo "zend_extension=xdebug.so" > /etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.mode=debug" >> /etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.start_with_request=yes" >> /etc/php/conf.d/xdebug.ini
 
-# Instalar Vim-Plug
-RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+# -----------------------------
+# Configuración de shell
+# -----------------------------
+# Configurar aliases y prompt
+RUN echo 'PS1="[\u@\h \W]\\$ "' >> /root/.bashrc && \
+    echo "alias vi='nvim'" >> /root/.bashrc && \
+    echo "alias vim='nvim'" >> /root/.bashrc && \
+    echo "alias ll='ls -la --color=auto'" >> /root/.bashrc && \
+    echo "alias g='git'" >> /root/.bashrc && \
+    echo "alias d='docker'" >> /root/.bashrc
+
+# Instalar vim-plug para Neovim
+RUN curl -fLo /root/.local/share/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-# Descargar y copiar el archivo .vimrc desde GitHub
-RUN curl -sSLo ~/.vimrc https://raw.githubusercontent.com/IvanRuizOrtega/config-vim/refs/heads/main/vimrc
+# Copiar configuración de Neovim
+COPY init.vim /root/.config/nvim/init.vim
+COPY setup_vim.sh /root/setup_vim.sh
 
-## Themes use colorscheme clt + d
-RUN  mkdir -p ~/.vim/colors && \ 
-curl -sSLo ~/.vim/colors/gruvbox.vim https://raw.githubusercontent.com/morhetz/gruvbox/refs/heads/master/colors/gruvbox.vim
+# Ejecutar setup
+RUN chmod +x /root/setup_vim.sh && /root/setup_vim.sh
 
-# Configurar CoC para que no falle la instalación
-RUN mkdir -p ~/.config/coc/extensions && \
-    cd ~/.config/coc/extensions && \
-    npm install --global-style --ignore-scripts --no-bin-links --no-package-lock coc-prettier coc-pyright coc-tsserver coc-html coc-css coc-phpls coc-eslint coc-json
-
-# Definir la variable de entorno de Node.js para CoC
-ENV NODE_PATH=/root/.config/coc/extensions/node_modules
-
-# Ejecutar Vim-Plug y CocInstall en un script
-COPY setup_vim.sh /setup_vim.sh
-RUN chmod +x /setup_vim.sh && /setup_vim.sh
-
-# Antes de CMD o al final
-RUN git config --global --add safe.directory /projects
-
-# Definir el directorio de trabajo por defecto
-WORKDIR /projects
-
-# Ejecutar bash por defecto
-CMD ["vim"]
+WORKDIR /root
+CMD ["nvim"]
