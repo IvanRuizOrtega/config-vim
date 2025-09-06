@@ -100,38 +100,51 @@ dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close()
 dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end
 
 -- ========================
--- Python (requiere: pip install debugpy)
+-- Python (debugpy attach)
 -- ========================
 dap.adapters.python = {
-  type = 'executable',
-  command = 'python',
-  args = { '-m', 'debugpy.adapter' },
+  type = 'server',
+  host = "127.0.0.1",
+  port = 5678, -- dummy, se sobrescribe en connect()
 }
 dap.configurations.python = {
   {
     type = 'python',
-    request = 'launch',
-    name = "Python: archivo actual",
-    program = "${file}",
-    pythonPath = function()
-      return 'python'
+    request = 'attach',
+    name = "Python: Attach (dynamic)",
+    justMyCode = false,
+    connect = function()
+      return {
+        host = vim.fn.input("Host [default: 127.0.0.1]: ", "127.0.0.1"),
+        port = tonumber(vim.fn.input("Port [default: 5678]: ", "5678")),
+      }
     end,
+    pathMappings = {
+      {
+        localRoot = vim.fn.getcwd(),
+        remoteRoot = "/app",
+      },
+    },
   },
 }
 
 -- ========================
--- PHP (requiere Xdebug)
+-- PHP (Xdebug attach)
 -- ========================
 dap.adapters.php = {
-  type = 'executable',
-  command = 'node',
-  args = {os.getenv('HOME') .. '/.local/share/nvim/dap_adapters/vscode-php-debug/out/phpDebug.js'}
+  type = 'server',
+  host = function()
+    return vim.fn.input('Host [default: localhost]: ', '127.0.0.1')
+  end,
+  port = function()
+    return tonumber(vim.fn.input('Port [default: 9003]: ', '9003'))
+  end
 }
 dap.configurations.php = {
   {
     type = 'php',
     request = 'launch',
-    name = "PHP: Xdebug",
+    name = "PHP: attach Xdebug",
     port = 9003,
     pathMappings = {
       ["/var/www/html"] = vim.fn.getcwd()
@@ -140,33 +153,32 @@ dap.configurations.php = {
 }
 
 -- ========================
--- Node.js / TypeScript
+-- Node.js / TypeScript (attach)
 -- ========================
 dap.adapters.node2 = {
-  type = 'executable',
-  command = 'node',
-  args = {os.getenv('HOME') .. '/.local/share/nvim/dap_adapters/vscode-node-debug2/out/src/nodeDebug.js'},
+  type = 'server',
+  host = function()
+    return vim.fn.input('Host [default: localhost]: ', '127.0.0.1')
+  end,
+  port = function()
+    return tonumber(vim.fn.input('Port [default: 9229]: ', '9229'))
+  end
 }
 dap.configurations.javascript = {
   {
-    name = 'Node: archivo JS',
-    type = 'node2',
-    request = 'launch',
-    program = '${file}',
-    cwd = vim.fn.getcwd(),
-  },
+    type = "node2",
+    request = "attach",
+    name = "Attach Node.js",
+    restart = true,
+  }
 }
 dap.configurations.typescript = {
   {
-    name = 'Node: archivo TS',
-    type = 'node2',
-    request = 'launch',
-    program = '${file}',
-    cwd = vim.fn.getcwd(),
-    sourceMaps = true,
-    protocol = 'inspector',
-    runtimeArgs = { "--loader", "ts-node/esm" },
-  },
+    type = "node2",
+    request = "attach",
+    name = "Attach Node.js (TS)",
+    restart = true,
+  }
 }
 EOF
 
