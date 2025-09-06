@@ -20,3 +20,13 @@ services:
 ## RUN pip install --no-cache-dir debugpy
 # ... otras instrucciones
 
+## comandos Debugger
+#F5 → Iniciar / continuar
+#F10 → Step over
+#F11 → Step into
+#F12 → Step out
+#<leader>b → Toggle breakpoint
+#<leader>B → Breakpoint con condición
+#<leader>dr → Abrir REPL
+#<leader>dl → Reejecutar última sesión
+#<leader>du → Mostrar / ocultar UI
