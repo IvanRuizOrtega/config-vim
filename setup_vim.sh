@@ -133,19 +133,20 @@ dap.configurations.python = {
 -- ========================
 dap.adapters.php = {
   type = 'server',
-  host = function()
-    return vim.fn.input('Host [default: localhost]: ', '127.0.0.1')
-  end,
-  port = function()
-    return tonumber(vim.fn.input('Port [default: 9003]: ', '9003'))
-  end
+  host = "127.0.0.1",
+  port = 9003
 }
 dap.configurations.php = {
   {
     type = 'php',
     request = 'launch',
-    name = "PHP: attach Xdebug",
-    port = 9003,
+    name = "PHP: Xdebug (dynamic)",
+    connect = function()
+      return {
+        host = vim.fn.input("Host [default: 127.0.0.1]: ", "127.0.0.1"),
+        port = tonumber(vim.fn.input("Port [default: 9003]: ", "9003")),
+      }
+    end,
     pathMappings = {
       ["/var/www/html"] = vim.fn.getcwd()
     },
