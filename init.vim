@@ -46,11 +46,29 @@ set number
 set relativenumber
 set cursorline
 set expandtab shiftwidth=4 tabstop=4 smartindent
-set clipboard=unnamedplus
 set wildmenu
 set background=dark
 colorscheme gruvbox
 let mapleader=" "   " usa espacio como <leader>
+
+" Clipboard: usar el clipboard del sistema
+set clipboard=unnamedplus
+
+" Forzar a Neovim a usar xclip como proveedor de clipboard
+if executable('xclip')
+  let g:clipboard = {
+        \   'name': 'xclip',
+        \   'copy': {
+        \      '+': ['xclip', '-selection', 'clipboard'],
+        \      '*': ['xclip', '-selection', 'primary'],
+        \    },
+        \   'paste': {
+        \      '+': ['xclip', '-selection', 'clipboard', '-o'],
+        \      '*': ['xclip', '-selection', 'primary', '-o'],
+        \   },
+        \   'cache_enabled': 0,
+        \ }
+endif
 
 " ------------------------------
 " Atajos de antes (NERDTree, FZF, git, commentary)
