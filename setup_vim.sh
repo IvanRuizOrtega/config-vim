@@ -6,22 +6,30 @@
 nvim +'PlugInstall --sync' +qall
 
 # ============================
-# Instalar extensiones de coc.nvim (solo LSP/format, no debug)
+# Instalar extensiones de coc.nvim (LSP y formatters)
 # ============================
-nvim +'CocInstall -sync coc-prettier coc-pyright coc-tsserver coc-html coc-css coc-phpls coc-eslint coc-json' +qall
+nvim +'CocInstall -sync coc-prettier coc-pyright coc-tsserver coc-html coc-css coc-phpls coc-eslint coc-json coc-yaml' +qall
 
 # ============================
 # Crear carpeta de configuración de CoC si no existe
 # ============================
-mkdir -p ~/.vim
+mkdir -p ~/.config/nvim
 
 # ============================
-# Configuración de CoC
+# Configuración de CoC (formato + LSP por lenguaje)
 # ============================
-cat > ~/.vim/coc-settings.json <<EOF
+cat > ~/.config/nvim/coc-settings.json <<'EOF'
 {
-  "coc.preferences.formatOnSave": true,
+  "coc.preferences.formatOnSaveFiletypes": ["python", "php", "javascript", "typescript", "html", "css", "json", "yaml"],
   "coc.preferences.formatOnType": true,
+
+  "python.formatting.provider": "black",
+
+  "eslint.enable": true,
+  "eslint.filetypes": ["javascript", "javascriptreact", "typescript", "typescriptreact", "vue"],
+
+  "prettier.enable": true,
+  "prettier.requireConfig": false,
 
   "languageserver": {
     "python": {
@@ -105,7 +113,7 @@ dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end
 dap.adapters.python = {
   type = 'server',
   host = "127.0.0.1",
-  port = 5678, -- dummy, se sobrescribe en connect()
+  port = 5678,
 }
 dap.configurations.python = {
   {
@@ -115,15 +123,12 @@ dap.configurations.python = {
     justMyCode = false,
     connect = function()
       return {
-        host = vim.fn.input("Host [default: 127.0.0.1]: ", "127.0.0.1"),
-        port = tonumber(vim.fn.input("Port [default: 5678]: ", "5678")),
+        host = vim.fn.input("Host [127.0.0.1]: ", "127.0.0.1"),
+        port = tonumber(vim.fn.input("Port [5678]: ", "5678")),
       }
     end,
     pathMappings = {
-      {
-        localRoot = vim.fn.getcwd(),
-        remoteRoot = "/app",
-      },
+      { localRoot = vim.fn.getcwd(), remoteRoot = "/app" },
     },
   },
 }
@@ -133,20 +138,15 @@ dap.configurations.python = {
 -- ========================
 dap.adapters.php = {
   type = 'server',
-  host = "127.0.0.1",
-  port = 9003
+  host = function() return vim.fn.input('Host [127.0.0.1]: ', '127.0.0.1') end,
+  port = function() return tonumber(vim.fn.input('Port [9003]: ', '9003')) end,
 }
 dap.configurations.php = {
   {
     type = 'php',
     request = 'launch',
-    name = "PHP: Xdebug (dynamic)",
-    connect = function()
-      return {
-        host = vim.fn.input("Host [default: 127.0.0.1]: ", "127.0.0.1"),
-        port = tonumber(vim.fn.input("Port [default: 9003]: ", "9003")),
-      }
-    end,
+    name = "PHP: attach Xdebug",
+    port = 9003,
     pathMappings = {
       ["/var/www/html"] = vim.fn.getcwd()
     },
@@ -158,28 +158,14 @@ dap.configurations.php = {
 -- ========================
 dap.adapters.node2 = {
   type = 'server',
-  host = function()
-    return vim.fn.input('Host [default: localhost]: ', '127.0.0.1')
-  end,
-  port = function()
-    return tonumber(vim.fn.input('Port [default: 9229]: ', '9229'))
-  end
+  host = function() return vim.fn.input('Host [127.0.0.1]: ', '127.0.0.1') end,
+  port = function() return tonumber(vim.fn.input('Port [9229]: ', '9229')) end,
 }
 dap.configurations.javascript = {
-  {
-    type = "node2",
-    request = "attach",
-    name = "Attach Node.js",
-    restart = true,
-  }
+  { type = "node2", request = "attach", name = "Attach Node.js", restart = true }
 }
 dap.configurations.typescript = {
-  {
-    type = "node2",
-    request = "attach",
-    name = "Attach Node.js (TS)",
-    restart = true,
-  }
+  { type = "node2", request = "attach", name = "Attach Node.js (TS)", restart = true }
 }
 EOF
 
@@ -191,6 +177,6 @@ echo "Agrega en tu init.vim o init.lua:"
 echo "  lua require('dap-config')"
 echo ""
 echo "Requisitos adicionales:"
-echo "  - Python: pip install debugpy"
+echo "  - Python: pip install debugpy black"
 echo "  - Node:   adaptador en ~/.local/share/nvim/dap_adapters/vscode-node-debug2"
 echo "  - PHP:    habilitar Xdebug (puerto 9003) en tu contenedor"
