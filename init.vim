@@ -109,3 +109,16 @@ inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gr <Plug>(coc-references)
 nmap <silent> rn <Plug>(coc-rename)
+
+" ------------------------------
+" Formateo de archivos
+" ------------------------------
+
+" Formatear con <leader>f
+nnoremap <silent> <leader>f :call CocActionAsync('format')<CR>
+
+" Formatear al guardar automáticamente
+augroup fmt
+  autocmd!
+  autocmd BufWritePre * :silent! call CocAction('format')
+augroup END
