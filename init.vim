@@ -1,22 +1,36 @@
+" ------------------------------
+" Plugins con vim-plug
+" ------------------------------
 call plug#begin('~/.vim/plugged')
+
+" Config básica
+Plug 'tpope/vim-sensible'
+
+" Íconos, tree, airline
+Plug 'ryanoasis/vim-devicons'
+Plug 'preservim/nerdtree'
+Plug 'vim-airline/vim-airline'
+
+" FZF
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+" Comentarios, indent, git
+Plug 'tpope/vim-commentary'
+Plug 'Yggdroot/indentLine'
+Plug 'zivyangll/git-blame.vim'
+
+" Snippets
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
 
 " LSP / autocompletado
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-" Explorer, status bar, fzf
-Plug 'preservim/nerdtree'
-Plug 'vim-airline/vim-airline'
-Plug 'junegunn/fzf'
-Plug 'junegunn/fzf.vim'
-
-" Snippets
-Plug 'honza/vim-snippets'
-
 " Colores
 Plug 'morhetz/gruvbox'
 
-" Debugger con coc.nvim
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Debugger
 Plug 'mfussenegger/nvim-dap'
 Plug 'rcarriga/nvim-dap-ui'
 Plug 'theHamsta/nvim-dap-virtual-text'
@@ -24,8 +38,10 @@ Plug 'nvim-neotest/nvim-nio'
 
 call plug#end()
 
+" ------------------------------
 " Opciones básicas
-syntax on
+" ------------------------------
+syntax enable
 set number
 set relativenumber
 set cursorline
@@ -33,27 +49,45 @@ set expandtab shiftwidth=4 tabstop=4 smartindent
 set clipboard=unnamedplus
 set wildmenu
 set background=dark
-
-" Colores
 colorscheme gruvbox
+let mapleader=" "   " usa espacio como <leader>
 
-" Atajos
-nnoremap <C-n> :NERDTreeToggle<CR>
-nnoremap <C-p> :Files<CR>
+" ------------------------------
+" Atajos de antes (NERDTree, FZF, git, commentary)
+" ------------------------------
+nnoremap <silent><F2> :NERDTreeToggle<CR>
+nnoremap <silent><F3> :NERDTreeFind<CR>
+nnoremap sf :Files<CR>
+nnoremap st :Rg<Space>
+nnoremap bo :Buffers<CR>
+nnoremap sl :BLines<CR>
+nnoremap <space>c :Commentary<CR>
+vnoremap <space>c :Commentary<CR>
+nnoremap Gc :<C-u>call gitblame#echo()<CR>
 
-" Debugger
+" ------------------------------
+" Debugger (nvim-dap)
+" ------------------------------
 lua require('dap-config')
 
-" -----------------------------
-" Atajos Debugger (nvim-dap)
-" -----------------------------
 nnoremap <F5> :lua require'dap'.continue()<CR>
 nnoremap <F10> :lua require'dap'.step_over()<CR>
 nnoremap <F11> :lua require'dap'.step_into()<CR>
 nnoremap <F12> :lua require'dap'.step_out()<CR>
-
 nnoremap <leader>b :lua require'dap'.toggle_breakpoint()<CR>
 nnoremap <leader>B :lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>
 nnoremap <leader>dr :lua require'dap'.repl.open()<CR>
 nnoremap <leader>dl :lua require'dap'.run_last()<CR>
 nnoremap <leader>du :lua require'dapui'.toggle()<CR>
+
+" ------------------------------
+" Coc.nvim configuración básica
+" ------------------------------
+set updatetime=300
+set signcolumn=yes
+inoremap <silent><expr> <TAB> coc#pum#visible() ? coc#pum#next(1) : "\<Tab>"
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gr <Plug>(coc-references)
+nmap <silent> rn <Plug>(coc-rename)
