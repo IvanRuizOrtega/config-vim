@@ -36,6 +36,9 @@ Plug 'rcarriga/nvim-dap-ui'
 Plug 'theHamsta/nvim-dap-virtual-text'
 Plug 'nvim-neotest/nvim-nio'
 
+" Copilot
+Plug 'github/copilot.vim'
+
 call plug#end()
 
 " ------------------------------
